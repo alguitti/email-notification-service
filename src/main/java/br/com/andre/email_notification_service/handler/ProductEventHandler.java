@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -41,13 +42,16 @@ public class ProductEventHandler {
 			}
 
 		} catch (ResourceAccessException e) {
-			log.error("[LISTENER] - Error on the http request: {}", e.getMessage());
+			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
+			throw new RetryableException(e);
+		} catch (HttpClientErrorException e) {
+			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
 			throw new RetryableException(e);
 		} catch (HttpServerErrorException e) {
-			log.error("[LISTENER] - Error on the http request: {}", e.getMessage());
+			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
 			throw new NotRetryableException(e);
 		} catch (Exception e) {
-			log.error("[LISTENER] - Error on the http request: {}", e.getMessage());
+			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
 			throw new NotRetryableException(e);
 		}
 
