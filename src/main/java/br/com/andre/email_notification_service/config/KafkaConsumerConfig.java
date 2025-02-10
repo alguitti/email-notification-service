@@ -20,17 +20,14 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConsumerRecordRecoverer;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.listener.KafkaListenerErrorHandler;
-import org.springframework.kafka.listener.ListenerExecutionFailedException;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import org.springframework.messaging.Message;
-import org.springframework.util.backoff.BackOff;
-import org.springframework.util.backoff.BackOffExecution;
 import org.springframework.util.backoff.FixedBackOff;
 
 import br.com.andre.core.model.ProductEvent;
+import br.com.andre.email_notification_service.exception.NotRetryableException;
+import br.com.andre.email_notification_service.exception.RetryableException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -46,10 +43,16 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, ProductEvent> factory = 
         		new ConcurrentKafkaListenerContainerFactory<>();
         
+        //we can configure this to only send to DLT given specific Exceptions 
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(
-        		new DeadLetterPublishingRecoverer(kafkaTemplate()));
+        		new DeadLetterPublishingRecoverer(kafkaTemplate()), 
+        		new FixedBackOff(5000L, 3L)); //configures interval and attempts for retries
+        errorHandler.addNotRetryableExceptions(NotRetryableException.class);
+        errorHandler.addRetryableExceptions(RetryableException.class);
         
         factory.setConsumerFactory(consumerFactory());
+        
+        //consumerErrorHandler() is an option... but a dumb one
         factory.setCommonErrorHandler(errorHandler);
         return factory;
     }
@@ -97,6 +100,7 @@ public class KafkaConsumerConfig {
 		return config;
 	}
 	
+	//for producing in DLT only
 	public Map<String, Object> producerConfigs() {
     	Map<String, Object> configs = new HashMap<>();
     	configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getServer());
