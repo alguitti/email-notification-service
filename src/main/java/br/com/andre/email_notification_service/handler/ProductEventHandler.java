@@ -22,22 +22,19 @@ import br.com.andre.email_notification_service.dao.ProductEventRepository;
 import br.com.andre.email_notification_service.exception.NotRetryableException;
 import br.com.andre.email_notification_service.exception.RetryableException;
 import br.com.andre.email_notification_service.service.EventService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@Transactional
 @KafkaListener(topics = "products-created-events-topic", 
 	containerFactory = "pixConcurrentKafkaListenerContainerFactory")
 @RequiredArgsConstructor
 public class ProductEventHandler {
 	
 	private final EventService eventService;
-	
-//	private final RestTemplate restTemplate;
-//	private final ProductEventRepository productEventRepository;
-
-//	private static final String URI = "http://localhost:8082/emailFeedback/";
 
 	@KafkaHandler
 	public void handle(@Payload ProductEvent event,
@@ -48,31 +45,7 @@ public class ProductEventHandler {
 		log.info("[LISTENER] - Event Headers: {}", messageId);
 		log.info("[LISTENER] - Event Key: {}", messageKey);
 		
-		
 		eventService.execute(event, new ArrayList<String>());
-
-//		try {
-//
-//			String url = URI + event.getName();
-//			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-//
-//			if (response.getStatusCode().value() == HttpStatus.OK.value()) {
-//				log.info("[LISTENER] - Received Response from a remote service: {}", response.getBody());
-//			}
-//
-//		} catch (ResourceAccessException e) {
-//			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
-//			throw new RetryableException(e);
-//		} catch (HttpClientErrorException e) {
-//			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
-//			throw new RetryableException(e);
-//		} catch (HttpServerErrorException e) {
-//			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
-//			throw new NotRetryableException(e);
-//		} catch (Exception e) {
-//			log.error("[LISTENER] - Error on the http request: {}, {}", e.getMessage(), e.getClass());
-//			throw new NotRetryableException(e);
-//		}
 
 	}
 
