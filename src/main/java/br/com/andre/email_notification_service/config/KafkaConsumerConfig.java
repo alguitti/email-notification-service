@@ -97,6 +97,7 @@ public class KafkaConsumerConfig {
         config.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
         config.put(JsonDeserializer.TRUSTED_PACKAGES, kafkaConfig.getTrustedPackages());
         config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, ProductEvent.class);
+        config.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, kafkaConfig.getIsolationLevel());
 		return config;
 	}
 	

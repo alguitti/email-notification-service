@@ -14,5 +14,6 @@ public class KafkaConfig {
 	private String topic;
 	private String groupId;
 	private String trustedPackages;
+	private String isolationLevel;
 	
 }

@@ -15,7 +15,7 @@ public interface BaseValidator<T> {
 		String error = specificValidation(event);
 		
 		if (error != null) {
-			results.add(specificValidation(event));
+			results.add(error);
 		}
 		
 	}
