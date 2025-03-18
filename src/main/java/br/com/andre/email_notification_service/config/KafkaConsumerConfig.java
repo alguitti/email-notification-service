@@ -23,11 +23,13 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.util.backoff.FixedBackOff;
 
 import br.com.andre.core.model.ProductEvent;
 import br.com.andre.email_notification_service.exception.NotRetryableException;
 import br.com.andre.email_notification_service.exception.RetryableException;
+import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -72,6 +74,11 @@ public class KafkaConsumerConfig {
 		return new DefaultKafkaProducerFactory<>(producerConfigs());
 	}
 	
+	@Bean("transactionManager")
+	public JpaTransactionManager jpaTransactionManager(EntityManagerFactory entityManagerFactory) {
+		return new JpaTransactionManager(entityManagerFactory);
+	}
+	
 	
 	@Bean
 	public DefaultErrorHandler consumerErrorHandler() {
@@ -98,6 +105,7 @@ public class KafkaConsumerConfig {
         config.put(JsonDeserializer.TRUSTED_PACKAGES, kafkaConfig.getTrustedPackages());
         config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, ProductEvent.class);
         config.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, kafkaConfig.getIsolationLevel());
+        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaConfig.getAutoOffsetReset());
 		return config;
 	}
 	

@@ -1,9 +1,6 @@
 package br.com.andre.email_notification_service.validator;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
-import org.springframework.validation.ObjectError;
 
 import br.com.andre.core.model.ProductEvent;
 import br.com.andre.email_notification_service.dao.ProductEventRepository;

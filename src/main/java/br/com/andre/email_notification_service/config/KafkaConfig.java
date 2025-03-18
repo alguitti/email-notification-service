@@ -15,5 +15,6 @@ public class KafkaConfig {
 	private String groupId;
 	private String trustedPackages;
 	private String isolationLevel;
+	private String autoOffsetReset;
 	
 }
