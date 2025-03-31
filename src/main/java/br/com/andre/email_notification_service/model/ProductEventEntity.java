@@ -8,13 +8,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "PRODUCT_EVENT")
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductEventEntity implements Serializable {
 
 	private static final long serialVersionUID = -5370183428757728566L;
