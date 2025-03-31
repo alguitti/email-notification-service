@@ -1,16 +1,11 @@
 package br.com.andre.email_notification_service;
 
-import static org.hamcrest.CoreMatchers.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -19,13 +14,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
@@ -38,7 +28,6 @@ import br.com.andre.core.model.ProductEvent;
 import br.com.andre.email_notification_service.dao.ProductEventRepository;
 import br.com.andre.email_notification_service.model.ProductEventEntity;
 import br.com.andre.email_notification_service.rest.EventRestNotificator;
-import br.com.andre.email_notification_service.service.EventService;
 
 @EmbeddedKafka
 @SpringBootTest
@@ -69,9 +58,7 @@ public class HandlerCompleteIntegrationTest {
 
 	@Test
 	void testHandler_OnProductCreated_HandlesEvent() throws Exception {
-		
-//		when(mockRestTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), eq(String.class))).thenReturn(new ResponseEntity<String>("any", HttpStatus.OK));
-		
+				
 		doNothing().when(mockEventRestNotificator).dispatch(any());
 		
 		String messageId = UUID.randomUUID().toString();
@@ -82,9 +69,6 @@ public class HandlerCompleteIntegrationTest {
 		
 		SendResult<String, Object> result = future.join();
 		
-//		verify(mockRestTemplate, times(1)).exchange(URI + event.getName(), HttpMethod.GET, null, String.class);
-	
-
 		Thread.sleep(1000L);
 		
 		verify(mockEventRestNotificator).dispatch(event);
